@@ -3,808 +3,534 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FocusFlow — One Task at a Time</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Taskbit — Your project builds itself</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-  :root {
-    --bg: #F5F2EC;
-    --surface: #FFFDF9;
-    --ink: #1A1714;
-    --ink-2: #6B6660;
-    --ink-3: #B0AAA3;
-    --accent: #D4521F;
-    --accent-light: #FAE8DF;
-    --accent-mid: #F0A080;
-    --success: #2D7D54;
-    --success-light: #DFF2E9;
-    --border: rgba(26,23,20,0.10);
-    --border-strong: rgba(26,23,20,0.18);
-    --radius: 16px;
-    --radius-sm: 10px;
-    --shadow: 0 2px 12px rgba(26,23,20,0.07);
-  }
+:root{
+  --bg:#0C0C0B;
+  --surface:#141413;
+  --surface2:#1C1C1A;
+  --surface3:#242422;
+  --ink:#F0EDE8;
+  --ink2:#9C9890;
+  --ink3:#5A5854;
+  --accent:#E8D5A3;
+  --accent2:#C4A96B;
+  --accent-bg:rgba(232,213,163,0.08);
+  --accent-bg2:rgba(232,213,163,0.14);
+  --border:rgba(240,237,232,0.08);
+  --border2:rgba(240,237,232,0.14);
+  --green:#4CAF7D;
+  --green-bg:rgba(76,175,125,0.1);
+  --radius:12px;
+  --radius-lg:20px;
+}
 
-  html { font-size: 16px; background: var(--bg); }
+html{font-size:16px;background:var(--bg);color:var(--ink);scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;line-height:1.6;min-height:100vh}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    color: var(--ink);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    background: var(--bg);
-  }
+a{color:inherit;text-decoration:none}
 
-  .app {
-    width: 100%;
-    max-width: 420px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    padding: 0 20px 40px;
-  }
+.serif{font-family:'Instrument Serif',serif}
 
-  /* ---- NAV ---- */
-  .nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 24px 0 20px;
-  }
-  .logo {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    color: var(--ink);
-    letter-spacing: -0.3px;
-  }
-  .logo span { color: var(--accent); }
-  .btn-reset {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--ink-2);
-    background: none;
-    border: 1px solid var(--border-strong);
-    border-radius: 99px;
-    padding: 6px 14px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .btn-reset:hover { background: var(--surface); color: var(--ink); }
+/* NAV */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 80px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
+  position:sticky;top:0;z-index:100;
+}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:22px;color:var(--ink);letter-spacing:-0.3px}
+.nav-logo span{color:var(--accent2)}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{font-size:14px;color:var(--ink2);transition:color 0.15s}
+.nav-links a:hover{color:var(--ink)}
+.btn-login{
+  font-size:14px;color:var(--ink2);
+  background:none;border:1px solid var(--border2);
+  border-radius:8px;padding:8px 18px;
+  cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all 0.15s;
+}
+.btn-login:hover{border-color:rgba(240,237,232,0.3);color:var(--ink)}
 
-  /* ---- SCREENS ---- */
-  .screen { display: none; flex-direction: column; flex: 1; animation: fadeUp 0.3s ease; }
-  .screen.active { display: flex; }
+/* HERO */
+.hero{
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+  padding:100px 80px 80px;
+  max-width:1440px;margin:0 auto;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--accent-bg);border:1px solid rgba(232,213,163,0.2);
+  border-radius:99px;padding:6px 14px;
+  font-size:13px;color:var(--accent);
+  margin-bottom:28px;
+}
+.badge-dot{width:6px;height:6px;background:var(--green);border-radius:50%;flex-shrink:0}
+.hero h1{
+  font-family:'Instrument Serif',serif;
+  font-size:68px;line-height:1.05;
+  letter-spacing:-1.5px;
+  color:var(--ink);
+  margin-bottom:6px;
+}
+.hero h1 em{color:var(--accent2);font-style:italic}
+.hero-sub{
+  font-size:18px;color:var(--ink2);line-height:1.65;
+  margin-bottom:40px;max-width:460px;font-weight:300;
+}
+.hero-actions{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+.btn-cta{
+  background:var(--accent);color:#0C0C0B;
+  border:none;border-radius:10px;
+  font-family:'Inter',sans-serif;font-size:15px;font-weight:500;
+  padding:15px 28px;cursor:pointer;
+  transition:all 0.15s;
+}
+.btn-cta:hover{background:var(--accent2)}
+.hero-social{font-size:13px;color:var(--ink3)}
+.hero-social span{color:var(--ink2)}
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+/* HERO CARD */
+.hero-card-wrap{position:relative}
+.hero-card{
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+}
+.card-topbar{
+  display:flex;align-items:center;gap:8px;
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface2);
+}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot-r{background:#FF5F57}
+.dot-y{background:#FFBD2E}
+.dot-g{background:#28C840}
+.card-body{padding:28px 28px 24px}
+.card-label{
+  font-size:10px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:8px;
+}
+.card-goal{
+  font-size:18px;color:var(--ink);font-weight:400;margin-bottom:4px;
+}
+.card-due{font-size:13px;color:var(--ink3);margin-bottom:28px}
 
-  /* ---- INPUT SCREEN ---- */
-  .hero-tag {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 12px;
-  }
-  .hero-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 36px;
-    line-height: 1.15;
-    letter-spacing: -0.5px;
-    color: var(--ink);
-    margin-bottom: 10px;
-  }
-  .hero-title em { color: var(--accent); font-style: italic; }
-  .hero-sub {
-    font-size: 15px;
-    color: var(--ink-2);
-    line-height: 1.6;
-    margin-bottom: 36px;
-  }
+.task-block{
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:var(--radius);padding:20px;
+  margin-bottom:20px;
+  position:relative;overflow:hidden;
+}
+.task-block::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--accent2);
+}
+.task-label{font-size:10px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent2);margin-bottom:10px}
+.task-num{
+  font-family:'Instrument Serif',serif;
+  font-size:48px;color:rgba(232,213,163,0.15);
+  position:absolute;top:10px;right:20px;line-height:1;
+}
+.task-text{font-size:17px;color:var(--ink);line-height:1.4;margin-bottom:6px}
+.task-hint{font-size:13px;color:var(--ink3)}
 
-  .field { margin-bottom: 20px; }
-  .field label {
-    display: block;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    color: var(--ink-2);
-    margin-bottom: 8px;
-  }
-  .field input {
-    width: 100%;
-    background: var(--surface);
-    border: 1.5px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    color: var(--ink);
-    padding: 14px 16px;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .field input::placeholder { color: var(--ink-3); }
-  .field input:focus { border-color: var(--accent); }
+.progress-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.progress-label{font-size:13px;color:var(--ink2)}
+.progress-day{font-size:13px;color:var(--ink3)}
+.progress-bar{height:4px;background:var(--surface3);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.progress-fill{height:100%;background:var(--accent2);border-radius:99px;width:29%}
 
-  .days-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 28px;
-    flex-wrap: wrap;
-  }
-  .day-chip {
-    padding: 8px 16px;
-    border-radius: 99px;
-    border: 1.5px solid var(--border-strong);
-    font-size: 14px;
-    font-weight: 400;
-    cursor: pointer;
-    background: var(--surface);
-    color: var(--ink);
-    transition: all 0.15s;
-  }
-  .day-chip.selected, .day-chip:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
+.saved-block{
+  background:var(--green-bg);border:1px solid rgba(76,175,125,0.2);
+  border-radius:10px;padding:14px 16px;
+}
+.saved-label{font-size:11px;font-weight:500;letter-spacing:0.8px;text-transform:uppercase;color:var(--green);margin-bottom:4px}
+.saved-text{font-size:14px;color:var(--ink2)}
 
-  .btn-primary {
-    width: 100%;
-    padding: 17px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    position: relative;
-    overflow: hidden;
-  }
-  .btn-primary:hover { background: #B84018; }
-  .btn-primary:active { transform: scale(0.98); }
+/* SECTIONS */
+section{padding:100px 80px;max-width:1440px;margin:0 auto}
 
-  /* ---- MAIN SCREEN ---- */
-  .goal-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--accent-light);
-    color: var(--accent);
-    font-size: 13px;
-    font-weight: 500;
-    padding: 6px 12px 6px 10px;
-    border-radius: 99px;
-    margin-bottom: 24px;
-  }
-  .goal-chip-dot {
-    width: 7px; height: 7px;
-    background: var(--accent);
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
+.section-eyebrow{
+  font-size:11px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;
+  color:var(--accent2);margin-bottom:16px;
+}
+.section-title{
+  font-family:'Instrument Serif',serif;
+  font-size:48px;line-height:1.1;letter-spacing:-0.8px;
+  color:var(--ink);margin-bottom:16px;
+}
+.section-sub{font-size:17px;color:var(--ink2);font-weight:300;max-width:520px;line-height:1.65}
 
-  .day-label {
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--ink-3);
-    margin-bottom: 8px;
-  }
+/* HOW IT WORKS */
+.how-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:2px;
+  margin-top:60px;
+  border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;
+}
+.how-card{
+  background:var(--surface);
+  padding:40px 36px;
+  border-right:1px solid var(--border);
+  transition:background 0.2s;
+}
+.how-card:last-child{border-right:none}
+.how-card:hover{background:var(--surface2)}
+.how-num{
+  font-family:'Instrument Serif',serif;
+  font-size:56px;color:var(--accent-bg2);
+  line-height:1;margin-bottom:20px;
+}
+.how-title{font-size:20px;color:var(--ink);margin-bottom:10px;font-weight:400}
+.how-text{font-size:15px;color:var(--ink2);line-height:1.65;font-weight:300}
 
-  .today-card {
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px 22px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow);
-    position: relative;
-    overflow: hidden;
-  }
-  .today-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--accent);
-    border-radius: 2px 2px 0 0;
-  }
-  .today-card.done::before { background: var(--success); }
+/* WHY IT WORKS */
+.why-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;margin-top:0}
+.why-cards{display:flex;flex-direction:column;gap:2px;margin-top:60px}
+.why-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:28px 30px;
+  transition:background 0.2s;
+}
+.why-card:hover{background:var(--surface2)}
+.why-icon{
+  width:36px;height:36px;
+  background:var(--accent-bg);border:1px solid rgba(232,213,163,0.15);
+  border-radius:8px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+.why-icon svg{width:16px;height:16px;stroke:var(--accent2);fill:none;stroke-width:1.5}
+.why-title{font-size:17px;color:var(--ink);margin-bottom:8px;font-weight:400}
+.why-text{font-size:14px;color:var(--ink2);line-height:1.65;font-weight:300}
 
-  .task-number {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--ink-3);
-    margin-bottom: 10px;
-  }
-  .task-text {
-    font-family: 'DM Serif Display', serif;
-    font-size: 26px;
-    line-height: 1.25;
-    color: var(--ink);
-    margin-bottom: 22px;
-  }
+/* PRICING / MODES */
+.modes-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+  margin-top:56px;
+}
+.mode-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:28px 24px 24px;
+  display:flex;flex-direction:column;gap:12px;
+  transition:all 0.2s;cursor:pointer;
+}
+.mode-card:hover{background:var(--surface2);border-color:var(--border2)}
+.mode-card.featured{
+  border-color:rgba(232,213,163,0.3);
+  background:var(--accent-bg);
+}
+.mode-tag{
+  font-size:10px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:4px;
+}
+.mode-tag.gold{color:var(--accent2)}
+.mode-name{font-size:22px;color:var(--ink);font-family:'Instrument Serif',serif}
+.mode-desc{font-size:14px;color:var(--ink2);line-height:1.6;font-weight:300;flex:1}
+.mode-pill{
+  display:inline-block;
+  font-size:12px;padding:4px 12px;border-radius:99px;
+  background:var(--surface3);color:var(--ink3);
+  align-self:flex-start;margin-top:4px;
+}
+.mode-pill.green{background:var(--green-bg);color:var(--green)}
+.switch-note{
+  text-align:center;margin-top:24px;
+  font-size:14px;color:var(--ink3);
+}
 
-  .btn-done {
-    width: 100%;
-    padding: 15px;
-    background: var(--ink);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  .btn-done:hover { background: #333; }
-  .btn-done:active { transform: scale(0.98); }
-  .btn-done.completed {
-    background: var(--success-light);
-    color: var(--success);
-    cursor: default;
-  }
+/* FAQ */
+.faq-list{
+  margin-top:56px;
+  border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;
+}
+.faq-item{border-bottom:1px solid var(--border);cursor:pointer}
+.faq-item:last-child{border-bottom:none}
+.faq-q{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:24px 30px;
+  font-size:16px;color:var(--ink);
+  transition:background 0.15s;
+}
+.faq-q:hover{background:var(--surface2)}
+.faq-icon{
+  width:22px;height:22px;
+  border:1px solid var(--border2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:16px;color:var(--ink3);
+  transition:all 0.2s;
+}
+.faq-a{
+  padding:0 30px 24px;
+  font-size:15px;color:var(--ink2);line-height:1.65;
+  display:none;font-weight:300;
+}
+.faq-item.open .faq-a{display:block}
+.faq-item.open .faq-icon{background:var(--accent-bg);color:var(--accent);border-color:rgba(232,213,163,0.2);transform:rotate(45deg)}
 
-  /* ---- PROGRESS ---- */
-  .progress-section { margin-bottom: 24px; }
-  .progress-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 8px;
-  }
-  .progress-label { font-size: 13px; color: var(--ink-2); }
-  .progress-pct { font-size: 20px; font-weight: 500; color: var(--ink); }
+/* CTA SECTION */
+.cta-section{
+  margin:0 80px 100px;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:var(--radius-lg);
+  padding:80px;
+  text-align:center;
+}
+.cta-section .section-title{margin:0 auto 16px;max-width:600px}
+.cta-section .section-sub{margin:0 auto 40px;text-align:center}
+.cta-sub-note{font-size:13px;color:var(--ink3);margin-top:14px}
 
-  .progress-bar-bg {
-    height: 8px;
-    background: rgba(26,23,20,0.08);
-    border-radius: 99px;
-    overflow: hidden;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 99px;
-    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .progress-bar-fill.complete { background: var(--success); }
+/* FOOTER */
+footer{
+  border-top:1px solid var(--border);
+  padding:32px 80px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.footer-logo{font-family:'Instrument Serif',serif;font-size:18px;color:var(--ink2)}
+.footer-note{font-size:13px;color:var(--ink3)}
 
-  /* ---- TASK LISTS ---- */
-  .section-title {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--ink-3);
-    margin-bottom: 12px;
-    margin-top: 24px;
-  }
-
-  .task-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-
-  .task-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    color: var(--ink-2);
-  }
-  .task-item.done-item { color: var(--success); }
-  .task-item-check {
-    width: 20px; height: 20px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px;
-  }
-  .task-item.done-item .task-item-check {
-    background: var(--success-light);
-    color: var(--success);
-  }
-  .task-item:not(.done-item) .task-item-check {
-    background: rgba(26,23,20,0.06);
-    color: var(--ink-3);
-  }
-  .task-item-day { font-size: 12px; margin-left: auto; flex-shrink: 0; color: var(--ink-3); }
-
-  /* ---- FINISH SCREEN ---- */
-  .confetti-wrap {
-    text-align: center;
-    padding: 20px 0 30px;
-  }
-  .trophy {
-    font-size: 56px;
-    margin-bottom: 16px;
-    animation: bounce 0.6s ease;
-  }
-  @keyframes bounce {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
-  }
-  .finish-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 32px;
-    color: var(--ink);
-    margin-bottom: 8px;
-  }
-  .finish-sub { font-size: 15px; color: var(--ink-2); margin-bottom: 30px; }
-
-  .output-card {
-    background: var(--surface);
-    border: 1.5px solid var(--border-strong);
-    border-radius: var(--radius);
-    overflow: hidden;
-    margin-bottom: 16px;
-  }
-  .output-header {
-    padding: 14px 18px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: var(--ink-2);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .btn-copy {
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--accent);
-    background: none;
-    border: 1px solid var(--accent-mid);
-    border-radius: 99px;
-    padding: 4px 12px;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    transition: all 0.15s;
-  }
-  .btn-copy:hover { background: var(--accent-light); }
-  .output-textarea {
-    width: 100%;
-    min-height: 180px;
-    padding: 16px 18px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    line-height: 1.65;
-    color: var(--ink);
-    background: var(--surface);
-    border: none;
-    resize: vertical;
-    outline: none;
-  }
-
-  .btn-secondary {
-    width: 100%;
-    padding: 15px;
-    background: transparent;
-    color: var(--ink);
-    border: 1.5px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-top: 10px;
-  }
-  .btn-secondary:hover { background: var(--surface); }
-
-  /* ---- TOAST ---- */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--ink);
-    color: #fff;
-    font-size: 14px;
-    padding: 12px 22px;
-    border-radius: 99px;
-    white-space: nowrap;
-    z-index: 100;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    pointer-events: none;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  /* ---- EMPTY STATES ---- */
-  .empty-state {
-    text-align: center;
-    padding: 20px;
-    font-size: 14px;
-    color: var(--ink-3);
-    font-style: italic;
-  }
-
-  /* Celebration pulse */
-  @keyframes pulse-success {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(45,125,84,0.3); }
-    50% { box-shadow: 0 0 0 8px rgba(45,125,84,0); }
-  }
-  .btn-done.celebrating { animation: pulse-success 0.6s ease; }
+/* DIVIDER */
+.full-divider{border:none;border-top:1px solid var(--border);margin:0 80px}
 </style>
 </head>
 <body>
-<div class="app">
 
-  <!-- NAV -->
-  <nav class="nav">
-    <div class="logo">Focus<span>Flow</span></div>
-    <button class="btn-reset" id="btnReset" style="display:none" onclick="confirmReset()">Start over</button>
-  </nav>
+<nav>
+  <div class="nav-logo">Task<span>bit</span></div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#why">Why it works</a>
+    <a href="#modes">Modes</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <button class="btn-login">Log in</button>
+</nav>
 
-  <!-- ===== INPUT SCREEN ===== -->
-  <div class="screen active" id="screenInput">
-    <div class="hero-tag">your daily dose of progress</div>
-    <h1 class="hero-title">Big goal?<br><em>One day at a time.</em></h1>
-    <p class="hero-sub">Tell us what you're working on and we'll turn it into small, doable daily tasks.</p>
-
-    <div class="field">
-      <label for="goalInput">What's your goal?</label>
-      <input type="text" id="goalInput" placeholder="e.g. Write my thesis, Learn Spanish…" maxlength="80" autocomplete="off">
+<!-- HERO -->
+<div style="max-width:1440px;margin:0 auto">
+<section style="padding:100px 80px 80px" class="hero" id="hero">
+  <div>
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      Testing with early users
     </div>
-
-    <div class="field">
-      <label>How many days do you have?</label>
-      <div class="days-row" id="daysChips">
-        <div class="day-chip" onclick="selectDays(3,this)">3 days</div>
-        <div class="day-chip" onclick="selectDays(5,this)">5 days</div>
-        <div class="day-chip" onclick="selectDays(7,this)">1 week</div>
-        <div class="day-chip" onclick="selectDays(14,this)">2 weeks</div>
-        <div class="day-chip" onclick="selectDays(30,this)">1 month</div>
-      </div>
-      <input type="number" id="daysCustom" placeholder="Or enter a custom number (e.g. 10)" min="1" max="365" style="margin-top:0">
+    <h1 class="serif">Your project<br><em>builds itself.</em></h1>
+    <p class="hero-sub">Follow one small step each day. Your work gets saved, structured, and combined into a finished result. No planning needed.</p>
+    <div class="hero-actions">
+      <button class="btn-cta">Get early access</button>
     </div>
-
-    <button class="btn-primary" onclick="createPlan()">Create my plan →</button>
+    <div class="hero-social">Join <span>340+ students</span> testing this</div>
   </div>
 
-  <!-- ===== MAIN SCREEN ===== -->
-  <div class="screen" id="screenMain">
-    <div class="goal-chip">
-      <div class="goal-chip-dot"></div>
-      <span id="goalDisplay">Your goal</span>
-    </div>
-
-    <!-- Progress -->
-    <div class="progress-section">
-      <div class="progress-meta">
-        <span class="progress-label" id="progressLabel">Day 1 of 7</span>
-        <span class="progress-pct" id="progressPct">0%</span>
+  <div class="hero-card-wrap">
+    <div class="hero-card">
+      <div class="card-topbar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
       </div>
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+      <div class="card-body">
+        <div class="card-label">Your goal</div>
+        <div class="card-goal">Write internship report</div>
+        <div class="card-due">Due: Friday, April 11</div>
+
+        <div class="task-block">
+          <div class="task-label">Today's task</div>
+          <div class="task-num">1</div>
+          <div class="task-text">Write 3 sentences about your main project</div>
+          <div class="task-hint">Just this. Nothing more.</div>
+        </div>
+
+        <div class="card-label" style="margin-bottom:8px">Your report so far</div>
+        <div class="progress-row">
+          <span class="progress-label">Day 4 of 14</span>
+          <span class="progress-day">29%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+
+        <div class="saved-block">
+          <div class="saved-label">Saved automatically</div>
+          <div class="saved-text">Introduction complete. Methodology started. Everything saved.</div>
+        </div>
       </div>
-    </div>
-
-    <!-- Today's task -->
-    <div class="today-card" id="todayCard">
-      <div class="task-number" id="todayNumber">Today's task</div>
-      <div class="task-text" id="todayTask">Loading…</div>
-      <button class="btn-done" id="btnDone" onclick="markDone()">
-        <span id="btnDoneText">Mark as done</span>
-      </button>
-    </div>
-
-    <!-- Completed list -->
-    <div id="completedSection">
-      <div class="section-title">Completed ✓</div>
-      <ul class="task-list" id="completedList"></ul>
-    </div>
-
-    <!-- Upcoming list -->
-    <div id="upcomingSection">
-      <div class="section-title">Coming up</div>
-      <ul class="task-list" id="upcomingList"></ul>
     </div>
   </div>
-
-  <!-- ===== FINISH SCREEN ===== -->
-  <div class="screen" id="screenFinish">
-    <div class="confetti-wrap">
-      <div class="trophy">🎉</div>
-      <h2 class="finish-title">You did it!</h2>
-      <p class="finish-sub" id="finishSub">You completed all tasks for your goal.</p>
-    </div>
-
-    <div class="output-card">
-      <div class="output-header">
-        <span>Your journey</span>
-        <button class="btn-copy" onclick="copyOutput()">Copy text</button>
-      </div>
-      <textarea class="output-textarea" id="outputText" spellcheck="false"></textarea>
-    </div>
-
-    <button class="btn-primary" onclick="confirmReset()">Start a new goal →</button>
-    <button class="btn-secondary" onclick="showScreen('screenMain')">← Back to tasks</button>
-  </div>
-
+</section>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<hr class="full-divider">
+
+<!-- HOW IT WORKS -->
+<div style="max-width:1440px;margin:0 auto">
+<section id="how">
+  <div class="section-eyebrow">Simple process</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end">
+    <h2 class="section-title serif">How it works</h2>
+    <p class="section-sub">No setup headaches. No complicated systems.</p>
+  </div>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-num">1</div>
+      <div class="how-title">Tell us your goal</div>
+      <div class="how-text">"Write internship report by Friday" or "Finish thesis chapter in 2 weeks." We take it from there.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">2</div>
+      <div class="how-title">See one task per day</div>
+      <div class="how-text">Open the app, see exactly what to do today. Small enough to start immediately. No decisions needed.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">3</div>
+      <div class="how-title">Watch it come together</div>
+      <div class="how-text">Every task you complete gets saved and structured. At the end, your project is already built.</div>
+    </div>
+  </div>
+</section>
+</div>
+
+<hr class="full-divider">
+
+<!-- WHY IT WORKS -->
+<div style="max-width:1440px;margin:0 auto">
+<section id="why">
+  <div class="section-eyebrow">Why it works</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start">
+    <div>
+      <h2 class="section-title serif">Why it actually works</h2>
+      <p class="section-sub">Big projects fail because starting feels impossible. We fix that.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;padding-top:8px">
+      <div class="why-card">
+        <div class="why-icon">
+          <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        </div>
+        <div class="why-title">Starting is the hardest part</div>
+        <div class="why-text">We turn "write report" into "write 3 sentences." So small you can do it right now. No excuses.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">
+          <svg viewBox="0 0 16 16"><path d="M2 8h12M8 2l6 6-6 6"/></svg>
+        </div>
+        <div class="why-title">Zero planning required</div>
+        <div class="why-text">Open the app. See your one task. Do it. Done. Tomorrow brings the next piece. No thinking ahead.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">
+          <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+        </div>
+        <div class="why-title">Your work actually adds up</div>
+        <div class="why-text">Every task gets saved and structured automatically. By the deadline, your project is already finished.</div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<hr class="full-divider">
+
+<!-- MODES -->
+<div style="max-width:1440px;margin:0 auto">
+<section id="modes">
+  <div class="section-eyebrow">Your choice</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:0">
+    <h2 class="section-title serif">Pick your commitment level</h2>
+    <p class="section-sub">Everyone's different. Choose how much accountability you want.</p>
+  </div>
+  <div class="modes-grid">
+    <div class="mode-card">
+      <div class="mode-tag">No pressure</div>
+      <div class="mode-name">Chill</div>
+      <div class="mode-desc">Just daily guidance and task reminders. Perfect if you want structure without stakes.</div>
+      <div class="mode-pill green">Free</div>
+    </div>
+    <div class="mode-card featured">
+      <div class="mode-tag gold">Streak-based</div>
+      <div class="mode-name">Focus</div>
+      <div class="mode-desc">Build momentum with streaks. Miss a day, lose your streak. Simple motivation that works.</div>
+      <div class="mode-pill green">Popular</div>
+    </div>
+    <div class="mode-card">
+      <div class="mode-tag">Money on the line</div>
+      <div class="mode-name">Serious</div>
+      <div class="mode-desc">Commit a small amount and earn it back task by task. Lose a little if you skip. Real stakes.</div>
+      <div class="mode-pill">Coming soon</div>
+    </div>
+    <div class="mode-card">
+      <div class="mode-tag">Social accountability</div>
+      <div class="mode-name">Hardcore</div>
+      <div class="mode-desc">Share progress with friends or join a group. Nothing like a little peer pressure to keep you going.</div>
+      <div class="mode-pill">Coming soon</div>
+    </div>
+  </div>
+  <div class="switch-note">You can switch modes anytime. Start easy and level up when ready.</div>
+</section>
+</div>
+
+<hr class="full-divider">
+
+<!-- FAQ -->
+<div style="max-width:1440px;margin:0 auto">
+<section id="faq">
+  <div class="section-eyebrow">Got questions?</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start">
+    <div>
+      <h2 class="section-title serif">Common questions</h2>
+      <p class="section-sub">The things people usually ask.</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          How do commitment modes work?
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">Each mode adds a different layer of accountability. Chill is pure guidance — no pressure at all. Focus uses streaks to build habit. Serious and Hardcore are coming soon and will add financial or social stakes for people who want a real push.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          What happens if I miss a task?
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">In Chill mode, nothing. The task waits for you. In Focus mode, your streak resets — but your saved work stays intact. You never lose your progress, only the streak count. Just pick up from where you left off.</div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="section-eyebrow" style="text-align:center">Ready to start?</div>
+  <h2 class="section-title serif">Stop planning.<br>Start finishing.</h2>
+  <p class="section-sub">One small task per day. Your project builds itself. Try it with your next deadline.</p>
+  <button class="btn-cta" style="font-size:16px;padding:16px 36px">Try it early</button>
+  <div class="cta-sub-note">No payment required to sign up.</div>
+</div>
+
+<footer>
+  <div class="footer-logo">Taskbit</div>
+  <div class="footer-note">This is a concept test. No payment required to sign up.</div>
+</footer>
 
 <script>
-const TASK_TEMPLATES = [
-  ["Set up your workspace and gather what you need","Break your goal into small pieces","Start with the very first step","Build on yesterday's progress","Keep the momentum going","Push through the middle — it gets easier","Add more depth and detail","Refine what you've built so far","Review your progress and adjust","Do a quality check on your work","Fill any gaps you've noticed","Polish the rough edges","Finalize the main part","Make it presentable","Do one final review","Submit, share, or celebrate!"],
-  ["Research and understand the basics","Create a simple outline or plan","Start drafting or doing","Continue from where you left off","Review and keep building","Add details and depth","Polish and finalize"]
-];
-
-function getTaskForDay(goal, day, total) {
-  const templates = total <= 7 ? TASK_TEMPLATES[1] : TASK_TEMPLATES[0];
-  const idx = Math.min(day - 1, templates.length - 1);
-
-  const goalLower = goal.toLowerCase();
-  let prefix = "";
-
-  if (day === 1) {
-    if (goalLower.includes("write") || goalLower.includes("essay") || goalLower.includes("report") || goalLower.includes("thesis")) {
-      return "Set up your document and write your first paragraph";
-    }
-    if (goalLower.includes("learn") || goalLower.includes("study")) {
-      return "Find your learning materials and cover the basics";
-    }
-    if (goalLower.includes("code") || goalLower.includes("build") || goalLower.includes("app")) {
-      return "Set up the project and write your first lines";
-    }
-    if (goalLower.includes("read") || goalLower.includes("book")) {
-      return "Find your book and read the first chapter";
-    }
-    if (goalLower.includes("exercise") || goalLower.includes("workout") || goalLower.includes("run")) {
-      return "Do a light warm-up session and set your routine";
-    }
-    return "Set up your workspace and take the very first step";
-  }
-  if (day === total) {
-    return "Do a final review, polish everything, and finish strong";
-  }
-  if (day === Math.ceil(total / 2)) {
-    return "Halfway there — review your progress and keep building";
-  }
-
-  return templates[idx];
+function toggleFaq(el){
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen) el.classList.add('open');
 }
-
-let state = {
-  goal: "",
-  total: 0,
-  currentDay: 1,
-  tasks: [],
-  completed: []
-};
-
-let selectedDays = null;
-
-function selectDays(n, el) {
-  selectedDays = n;
-  document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('daysCustom').value = '';
-}
-
-function createPlan() {
-  const goal = document.getElementById('goalInput').value.trim();
-  const customDays = parseInt(document.getElementById('daysCustom').value);
-  const days = customDays || selectedDays;
-
-  if (!goal) { showToast("Please enter your goal first!"); return; }
-  if (!days || days < 1) { showToast("Choose how many days you have."); return; }
-  if (days > 365) { showToast("Let's keep it under a year 😄"); return; }
-
-  state.goal = goal;
-  state.total = days;
-  state.currentDay = 1;
-  state.completed = [];
-  state.tasks = [];
-
-  for (let i = 1; i <= days; i++) {
-    state.tasks.push({
-      day: i,
-      text: getTaskForDay(goal, i, days),
-      done: false
-    });
-  }
-
-  saveState();
-  renderMain();
-  showScreen('screenMain');
-  document.getElementById('btnReset').style.display = 'block';
-}
-
-function markDone() {
-  const btn = document.getElementById('btnDone');
-  if (btn.classList.contains('completed')) return;
-
-  const task = state.tasks[state.currentDay - 1];
-  task.done = true;
-  state.completed.push(task.day);
-
-  btn.classList.add('completed', 'celebrating');
-  btn.innerHTML = '<span>✓ Done! Great work.</span>';
-  document.getElementById('todayCard').classList.add('done');
-
-  saveState();
-
-  setTimeout(() => {
-    if (state.currentDay < state.total) {
-      state.currentDay++;
-      saveState();
-      renderMain();
-      showToast("Keep it up! Next task loaded 🚀");
-    } else {
-      saveState();
-      showFinish();
-    }
-  }, 900);
-}
-
-function renderMain() {
-  const task = state.tasks[state.currentDay - 1];
-  const completedCount = state.tasks.filter(t => t.done).length;
-  const pct = Math.round((completedCount / state.total) * 100);
-
-  document.getElementById('goalDisplay').textContent = state.goal;
-  document.getElementById('progressLabel').textContent = `Day ${state.currentDay} of ${state.total}`;
-  document.getElementById('progressPct').textContent = pct + '%';
-  document.getElementById('progressFill').style.width = pct + '%';
-  if (pct === 100) document.getElementById('progressFill').classList.add('complete');
-
-  document.getElementById('todayNumber').textContent = `Day ${task.day} of ${state.total}`;
-  document.getElementById('todayTask').textContent = task.text;
-
-  const card = document.getElementById('todayCard');
-  const btn = document.getElementById('btnDone');
-  if (task.done) {
-    card.classList.add('done');
-    btn.classList.add('completed');
-    btn.innerHTML = '<span>✓ Completed!</span>';
-  } else {
-    card.classList.remove('done');
-    btn.classList.remove('completed', 'celebrating');
-    btn.innerHTML = '<span>Mark as done ✓</span>';
-  }
-
-  const completedList = document.getElementById('completedList');
-  const upcomingList = document.getElementById('upcomingList');
-  completedList.innerHTML = '';
-  upcomingList.innerHTML = '';
-
-  const doneTasks = state.tasks.filter(t => t.done);
-  const futureTasks = state.tasks.filter(t => !t.done && t.day !== state.currentDay);
-
-  if (doneTasks.length === 0) {
-    completedList.innerHTML = '<li class="empty-state">No completed tasks yet — you\'ve got this!</li>';
-  } else {
-    doneTasks.slice().reverse().forEach(t => {
-      completedList.innerHTML += `<li class="task-item done-item">
-        <div class="task-item-check">✓</div>
-        <span>${t.text}</span>
-        <span class="task-item-day">Day ${t.day}</span>
-      </li>`;
-    });
-  }
-
-  if (futureTasks.length === 0) {
-    upcomingList.innerHTML = '<li class="empty-state">Nothing left — final stretch! 🏁</li>';
-  } else {
-    futureTasks.slice(0, 5).forEach(t => {
-      upcomingList.innerHTML += `<li class="task-item">
-        <div class="task-item-check">·</div>
-        <span>${t.text}</span>
-        <span class="task-item-day">Day ${t.day}</span>
-      </li>`;
-    });
-    if (futureTasks.length > 5) {
-      upcomingList.innerHTML += `<li class="empty-state">+${futureTasks.length - 5} more days ahead</li>`;
-    }
-  }
-}
-
-function showFinish() {
-  const doneTasks = state.tasks.filter(t => t.done);
-  document.getElementById('finishSub').textContent =
-    `You completed all ${state.total} tasks for "${state.goal}". Amazing work!`;
-
-  const outputLines = [
-    `Goal: ${state.goal}`,
-    `Completed: ${doneTasks.length} of ${state.total} days`,
-    ``,
-    ...doneTasks.map(t => `Day ${t.day}: ${t.text}`),
-    ``,
-    `You did it! 🎉`
-  ];
-  document.getElementById('outputText').value = outputLines.join('\n');
-
-  showScreen('screenFinish');
-}
-
-function copyOutput() {
-  const text = document.getElementById('outputText').value;
-  navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard!"));
-}
-
-function confirmReset() {
-  if (confirm("Start fresh? This will clear all your current progress.")) {
-    resetApp();
-  }
-}
-
-function resetApp() {
-  localStorage.removeItem('focusflow_state');
-  state = { goal: "", total: 0, currentDay: 1, tasks: [], completed: [] };
-  document.getElementById('goalInput').value = '';
-  document.getElementById('daysCustom').value = '';
-  document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('selected'));
-  selectedDays = null;
-  document.getElementById('btnReset').style.display = 'none';
-  showScreen('screenInput');
-}
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function saveState() {
-  localStorage.setItem('focusflow_state', JSON.stringify(state));
-}
-
-function loadState() {
-  try {
-    const saved = localStorage.getItem('focusflow_state');
-    if (saved) {
-      state = JSON.parse(saved);
-      if (state.goal && state.total) {
-        document.getElementById('btnReset').style.display = 'block';
-        const allDone = state.tasks.every(t => t.done);
-        if (allDone) {
-          showFinish();
-        } else {
-          renderMain();
-          showScreen('screenMain');
-        }
-      }
-    }
-  } catch(e) {
-    localStorage.removeItem('focusflow_state');
-  }
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-loadState();
 </script>
 </body>
 </html>
