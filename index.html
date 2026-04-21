@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FocusFlow — One Task at a Time</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F2EC;
+    --surface: #FFFDF9;
+    --ink: #1A1714;
+    --ink-2: #6B6660;
+    --ink-3: #B0AAA3;
+    --accent: #D4521F;
+    --accent-light: #FAE8DF;
+    --accent-mid: #F0A080;
+    --success: #2D7D54;
+    --success-light: #DFF2E9;
+    --border: rgba(26,23,20,0.10);
+    --border-strong: rgba(26,23,20,0.18);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 2px 12px rgba(26,23,20,0.07);
+  }
+
+  html { font-size: 16px; background: var(--bg); }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    background: var(--bg);
+  }
+
+  .app {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px 40px;
+  }
+
+  /* ---- NAV ---- */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 0 20px;
+  }
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+  }
+  .logo span { color: var(--accent); }
+  .btn-reset {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-2);
+    background: none;
+    border: 1px solid var(--border-strong);
+    border-radius: 99px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-reset:hover { background: var(--surface); color: var(--ink); }
+
+  /* ---- SCREENS ---- */
+  .screen { display: none; flex-direction: column; flex: 1; animation: fadeUp 0.3s ease; }
+  .screen.active { display: flex; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---- INPUT SCREEN ---- */
+  .hero-tag {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .hero-title em { color: var(--accent); font-style: italic; }
+  .hero-sub {
+    font-size: 15px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+
+  .field { margin-bottom: 20px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 8px;
+  }
+  .field input {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    color: var(--ink);
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input::placeholder { color: var(--ink-3); }
+  .field input:focus { border-color: var(--accent); }
+
+  .days-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .day-chip {
+    padding: 8px 16px;
+    border-radius: 99px;
+    border: 1.5px solid var(--border-strong);
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--ink);
+    transition: all 0.15s;
+  }
+  .day-chip.selected, .day-chip:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 17px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary:hover { background: #B84018; }
+  .btn-primary:active { transform: scale(0.98); }
+
+  /* ---- MAIN SCREEN ---- */
+  .goal-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 12px 6px 10px;
+    border-radius: 99px;
+    margin-bottom: 24px;
+  }
+  .goal-chip-dot {
+    width: 7px; height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .day-label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+  }
+
+  .today-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 22px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .today-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px 2px 0 0;
+  }
+  .today-card.done::before { background: var(--success); }
+
+  .task-number {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 10px;
+  }
+  .task-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 22px;
+  }
+
+  .btn-done {
+    width: 100%;
+    padding: 15px;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-done:hover { background: #333; }
+  .btn-done:active { transform: scale(0.98); }
+  .btn-done.completed {
+    background: var(--success-light);
+    color: var(--success);
+    cursor: default;
+  }
+
+  /* ---- PROGRESS ---- */
+  .progress-section { margin-bottom: 24px; }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .progress-label { font-size: 13px; color: var(--ink-2); }
+  .progress-pct { font-size: 20px; font-weight: 500; color: var(--ink); }
+
+  .progress-bar-bg {
+    height: 8px;
+    background: rgba(26,23,20,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .progress-bar-fill.complete { background: var(--success); }
+
+  /* ---- TASK LISTS ---- */
+  .section-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 12px;
+    margin-top: 24px;
+  }
+
+  .task-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+  .task-item.done-item { color: var(--success); }
+  .task-item-check {
+    width: 20px; height: 20px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+  }
+  .task-item.done-item .task-item-check {
+    background: var(--success-light);
+    color: var(--success);
+  }
+  .task-item:not(.done-item) .task-item-check {
+    background: rgba(26,23,20,0.06);
+    color: var(--ink-3);
+  }
+  .task-item-day { font-size: 12px; margin-left: auto; flex-shrink: 0; color: var(--ink-3); }
+
+  /* ---- FINISH SCREEN ---- */
+  .confetti-wrap {
+    text-align: center;
+    padding: 20px 0 30px;
+  }
+  .trophy {
+    font-size: 56px;
+    margin-bottom: 16px;
+    animation: bounce 0.6s ease;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  .finish-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .finish-sub { font-size: 15px; color: var(--ink-2); margin-bottom: 30px; }
+
+  .output-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .output-header {
+    padding: 14px 18px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .btn-copy {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--accent);
+    background: none;
+    border: 1px solid var(--accent-mid);
+    border-radius: 99px;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .btn-copy:hover { background: var(--accent-light); }
+  .output-textarea {
+    width: 100%;
+    min-height: 180px;
+    padding: 16px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink);
+    background: var(--surface);
+    border: none;
+    resize: vertical;
+    outline: none;
+  }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 15px;
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 10px;
+  }
+  .btn-secondary:hover { background: var(--surface); }
+
+  /* ---- TOAST ---- */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink);
+    color: #fff;
+    font-size: 14px;
+    padding: 12px 22px;
+    border-radius: 99px;
+    white-space: nowrap;
+    z-index: 100;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ---- EMPTY STATES ---- */
+  .empty-state {
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    color: var(--ink-3);
+    font-style: italic;
+  }
+
+  /* Celebration pulse */
+  @keyframes pulse-success {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(45,125,84,0.3); }
+    50% { box-shadow: 0 0 0 8px rgba(45,125,84,0); }
+  }
+  .btn-done.celebrating { animation: pulse-success 0.6s ease; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="logo">Focus<span>Flow</span></div>
+    <button class="btn-reset" id="btnReset" style="display:none" onclick="confirmReset()">Start over</button>
+  </nav>
+
+  <!-- ===== INPUT SCREEN ===== -->
+  <div class="screen active" id="screenInput">
+    <div class="hero-tag">your daily dose of progress</div>
+    <h1 class="hero-title">Big goal?<br><em>One day at a time.</em></h1>
+    <p class="hero-sub">Tell us what you're working on and we'll turn it into small, doable daily tasks.</p>
+
+    <div class="field">
+      <label for="goalInput">What's your goal?</label>
+      <input type="text" id="goalInput" placeholder="e.g. Write my thesis, Learn Spanish…" maxlength="80" autocomplete="off">
+    </div>
+
+    <div class="field">
+      <label>How many days do you have?</label>
+      <div class="days-row" id="daysChips">
+        <div class="day-chip" onclick="selectDays(3,this)">3 days</div>
+        <div class="day-chip" onclick="selectDays(5,this)">5 days</div>
+        <div class="day-chip" onclick="selectDays(7,this)">1 week</div>
+        <div class="day-chip" onclick="selectDays(14,this)">2 weeks</div>
+        <div class="day-chip" onclick="selectDays(30,this)">1 month</div>
+      </div>
+      <input type="number" id="daysCustom" placeholder="Or enter a custom number (e.g. 10)" min="1" max="365" style="margin-top:0">
+    </div>
+
+    <button class="btn-primary" onclick="createPlan()">Create my plan →</button>
+  </div>
+
+  <!-- ===== MAIN SCREEN ===== -->
+  <div class="screen" id="screenMain">
+    <div class="goal-chip">
+      <div class="goal-chip-dot"></div>
+      <span id="goalDisplay">Your goal</span>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-section">
+      <div class="progress-meta">
+        <span class="progress-label" id="progressLabel">Day 1 of 7</span>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Today's task -->
+    <div class="today-card" id="todayCard">
+      <div class="task-number" id="todayNumber">Today's task</div>
+      <div class="task-text" id="todayTask">Loading…</div>
+      <button class="btn-done" id="btnDone" onclick="markDone()">
+        <span id="btnDoneText">Mark as done</span>
+      </button>
+    </div>
+
+    <!-- Completed list -->
+    <div id="completedSection">
+      <div class="section-title">Completed ✓</div>
+      <ul class="task-list" id="completedList"></ul>
+    </div>
+
+    <!-- Upcoming list -->
+    <div id="upcomingSection">
+      <div class="section-title">Coming up</div>
+      <ul class="task-list" id="upcomingList"></ul>
+    </div>
+  </div>
+
+  <!-- ===== FINISH SCREEN ===== -->
+  <div class="screen" id="screenFinish">
+    <div class="confetti-wrap">
+      <div class="trophy">🎉</div>
+      <h2 class="finish-title">You did it!</h2>
+      <p class="finish-sub" id="finishSub">You completed all tasks for your goal.</p>
+    </div>
+
+    <div class="output-card">
+      <div class="output-header">
+        <span>Your journey</span>
+        <button class="btn-copy" onclick="copyOutput()">Copy text</button>
+      </div>
+      <textarea class="output-textarea" id="outputText" spellcheck="false"></textarea>
+    </div>
+
+    <button class="btn-primary" onclick="confirmReset()">Start a new goal →</button>
+    <button class="btn-secondary" onclick="showScreen('screenMain')">← Back to tasks</button>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const TASK_TEMPLATES = [
+  ["Set up your workspace and gather what you need","Break your goal into small pieces","Start with the very first step","Build on yesterday's progress","Keep the momentum going","Push through the middle — it gets easier","Add more depth and detail","Refine what you've built so far","Review your progress and adjust","Do a quality check on your work","Fill any gaps you've noticed","Polish the rough edges","Finalize the main part","Make it presentable","Do one final review","Submit, share, or celebrate!"],
+  ["Research and understand the basics","Create a simple outline or plan","Start drafting or doing","Continue from where you left off","Review and keep building","Add details and depth","Polish and finalize"]
+];
+
+function getTaskForDay(goal, day, total) {
+  const templates = total <= 7 ? TASK_TEMPLATES[1] : TASK_TEMPLATES[0];
+  const idx = Math.min(day - 1, templates.length - 1);
+
+  const goalLower = goal.toLowerCase();
+  let prefix = "";
+
+  if (day === 1) {
+    if (goalLower.includes("write") || goalLower.includes("essay") || goalLower.includes("report") || goalLower.includes("thesis")) {
+      return "Set up your document and write your first paragraph";
+    }
+    if (goalLower.includes("learn") || goalLower.includes("study")) {
+      return "Find your learning materials and cover the basics";
+    }
+    if (goalLower.includes("code") || goalLower.includes("build") || goalLower.includes("app")) {
+      return "Set up the project and write your first lines";
+    }
+    if (goalLower.includes("read") || goalLower.includes("book")) {
+      return "Find your book and read the first chapter";
+    }
+    if (goalLower.includes("exercise") || goalLower.includes("workout") || goalLower.includes("run")) {
+      return "Do a light warm-up session and set your routine";
+    }
+    return "Set up your workspace and take the very first step";
+  }
+  if (day === total) {
+    return "Do a final review, polish everything, and finish strong";
+  }
+  if (day === Math.ceil(total / 2)) {
+    return "Halfway there — review your progress and keep building";
+  }
+
+  return templates[idx];
+}
+
+let state = {
+  goal: "",
+  total: 0,
+  currentDay: 1,
+  tasks: [],
+  completed: []
+};
+
+let selectedDays = null;
+
+function selectDays(n, el) {
+  selectedDays = n;
+  document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('daysCustom').value = '';
+}
+
+function createPlan() {
+  const goal = document.getElementById('goalInput').value.trim();
+  const customDays = parseInt(document.getElementById('daysCustom').value);
+  const days = customDays || selectedDays;
+
+  if (!goal) { showToast("Please enter your goal first!"); return; }
+  if (!days || days < 1) { showToast("Choose how many days you have."); return; }
+  if (days > 365) { showToast("Let's keep it under a year 😄"); return; }
+
+  state.goal = goal;
+  state.total = days;
+  state.currentDay = 1;
+  state.completed = [];
+  state.tasks = [];
+
+  for (let i = 1; i <= days; i++) {
+    state.tasks.push({
+      day: i,
+      text: getTaskForDay(goal, i, days),
+      done: false
+    });
+  }
+
+  saveState();
+  renderMain();
+  showScreen('screenMain');
+  document.getElementById('btnReset').style.display = 'block';
+}
+
+function markDone() {
+  const btn = document.getElementById('btnDone');
+  if (btn.classList.contains('completed')) return;
+
+  const task = state.tasks[state.currentDay - 1];
+  task.done = true;
+  state.completed.push(task.day);
+
+  btn.classList.add('completed', 'celebrating');
+  btn.innerHTML = '<span>✓ Done! Great work.</span>';
+  document.getElementById('todayCard').classList.add('done');
+
+  saveState();
+
+  setTimeout(() => {
+    if (state.currentDay < state.total) {
+      state.currentDay++;
+      saveState();
+      renderMain();
+      showToast("Keep it up! Next task loaded 🚀");
+    } else {
+      saveState();
+      showFinish();
+    }
+  }, 900);
+}
+
+function renderMain() {
+  const task = state.tasks[state.currentDay - 1];
+  const completedCount = state.tasks.filter(t => t.done).length;
+  const pct = Math.round((completedCount / state.total) * 100);
+
+  document.getElementById('goalDisplay').textContent = state.goal;
+  document.getElementById('progressLabel').textContent = `Day ${state.currentDay} of ${state.total}`;
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+  if (pct === 100) document.getElementById('progressFill').classList.add('complete');
+
+  document.getElementById('todayNumber').textContent = `Day ${task.day} of ${state.total}`;
+  document.getElementById('todayTask').textContent = task.text;
+
+  const card = document.getElementById('todayCard');
+  const btn = document.getElementById('btnDone');
+  if (task.done) {
+    card.classList.add('done');
+    btn.classList.add('completed');
+    btn.innerHTML = '<span>✓ Completed!</span>';
+  } else {
+    card.classList.remove('done');
+    btn.classList.remove('completed', 'celebrating');
+    btn.innerHTML = '<span>Mark as done ✓</span>';
+  }
+
+  const completedList = document.getElementById('completedList');
+  const upcomingList = document.getElementById('upcomingList');
+  completedList.innerHTML = '';
+  upcomingList.innerHTML = '';
+
+  const doneTasks = state.tasks.filter(t => t.done);
+  const futureTasks = state.tasks.filter(t => !t.done && t.day !== state.currentDay);
+
+  if (doneTasks.length === 0) {
+    completedList.innerHTML = '<li class="empty-state">No completed tasks yet — you\'ve got this!</li>';
+  } else {
+    doneTasks.slice().reverse().forEach(t => {
+      completedList.innerHTML += `<li class="task-item done-item">
+        <div class="task-item-check">✓</div>
+        <span>${t.text}</span>
+        <span class="task-item-day">Day ${t.day}</span>
+      </li>`;
+    });
+  }
+
+  if (futureTasks.length === 0) {
+    upcomingList.innerHTML = '<li class="empty-state">Nothing left — final stretch! 🏁</li>';
+  } else {
+    futureTasks.slice(0, 5).forEach(t => {
+      upcomingList.innerHTML += `<li class="task-item">
+        <div class="task-item-check">·</div>
+        <span>${t.text}</span>
+        <span class="task-item-day">Day ${t.day}</span>
+      </li>`;
+    });
+    if (futureTasks.length > 5) {
+      upcomingList.innerHTML += `<li class="empty-state">+${futureTasks.length - 5} more days ahead</li>`;
+    }
+  }
+}
+
+function showFinish() {
+  const doneTasks = state.tasks.filter(t => t.done);
+  document.getElementById('finishSub').textContent =
+    `You completed all ${state.total} tasks for "${state.goal}". Amazing work!`;
+
+  const outputLines = [
+    `Goal: ${state.goal}`,
+    `Completed: ${doneTasks.length} of ${state.total} days`,
+    ``,
+    ...doneTasks.map(t => `Day ${t.day}: ${t.text}`),
+    ``,
+    `You did it! 🎉`
+  ];
+  document.getElementById('outputText').value = outputLines.join('\n');
+
+  showScreen('screenFinish');
+}
+
+function copyOutput() {
+  const text = document.getElementById('outputText').value;
+  navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard!"));
+}
+
+function confirmReset() {
+  if (confirm("Start fresh? This will clear all your current progress.")) {
+    resetApp();
+  }
+}
+
+function resetApp() {
+  localStorage.removeItem('focusflow_state');
+  state = { goal: "", total: 0, currentDay: 1, tasks: [], completed: [] };
+  document.getElementById('goalInput').value = '';
+  document.getElementById('daysCustom').value = '';
+  document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('selected'));
+  selectedDays = null;
+  document.getElementById('btnReset').style.display = 'none';
+  showScreen('screenInput');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function saveState() {
+  localStorage.setItem('focusflow_state', JSON.stringify(state));
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('focusflow_state');
+    if (saved) {
+      state = JSON.parse(saved);
+      if (state.goal && state.total) {
+        document.getElementById('btnReset').style.display = 'block';
+        const allDone = state.tasks.every(t => t.done);
+        if (allDone) {
+          showFinish();
+        } else {
+          renderMain();
+          showScreen('screenMain');
+        }
+      }
+    }
+  } catch(e) {
+    localStorage.removeItem('focusflow_state');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+loadState();
+</script>
+</body>
+</html>
